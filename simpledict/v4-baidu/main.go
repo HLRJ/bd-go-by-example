@@ -67,7 +67,7 @@ func query(word string) {
 	}
 	//fmt.Println(word, "UK:", dictResponse.Dictionary.Prons.En, "US:", dictResponse.Dictionary.Prons.EnUs)
 	for _, item := range dictResponse.Data {
-		fmt.Println(item)
+		fmt.Println(item.K, item.V) //将查询结果输出
 	}
 }
 
