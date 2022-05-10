@@ -99,7 +99,7 @@ func connect(reader *bufio.Reader, conn net.Conn) (err error) {
 	// RSV 保留字段，值为0x00
 	// ATYP 目标地址类型，DST.ADDR的数据对应这个字段的类型。
 	//   0x01表示IPv4地址，DST.ADDR为4个字节
-	//   0x03表示域名，DST.ADDR是一个可变长度的域名
+	//   0x03表示域名，DST.ADDR是一个可变长度的域名  第一个字节表示后面域名的字节长度
 	// DST.ADDR 一个可变长度的值
 	// DST.PORT 目标端口，固定2个字节
 
@@ -128,7 +128,7 @@ func connect(reader *bufio.Reader, conn net.Conn) (err error) {
 		if err != nil {
 			return fmt.Errorf("read hostSize failed:%w", err)
 		}
-		host := make([]byte, hostSize)
+		host := make([]byte, hostSize) //byte 就是uint8，创建一个域名长度的缓冲，将后面域名写入缓冲
 		_, err = io.ReadFull(reader, host)
 		if err != nil {
 			return fmt.Errorf("read host failed:%w", err)
@@ -143,7 +143,7 @@ func connect(reader *bufio.Reader, conn net.Conn) (err error) {
 	if err != nil {
 		return fmt.Errorf("read port failed:%w", err)
 	}
-	port := binary.BigEndian.Uint16(buf[:2])
+	port := binary.BigEndian.Uint16(buf[:2]) //大端模式
 
 	dest, err := net.Dial("tcp", fmt.Sprintf("%v:%v", addr, port))
 	if err != nil {
